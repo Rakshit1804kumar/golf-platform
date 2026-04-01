@@ -11,9 +11,11 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const storage = multer.memoryStorage();
-const upload  = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } }); // 5MB
-
+const storage = multer.diskStorage({
+  destination: '/tmp',
+  filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
+});
+const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 // GET /api/winners/my  — user's wins
 router.get('/my', protect, async (req, res) => {
   try {
